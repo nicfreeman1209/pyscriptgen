@@ -1,0 +1,27 @@
+[{"id":"bounty_hunter"},{"id":"pixie"},{"id":"sailor"},{"id":"balloonist"},{
+        "id": "Eulogist",
+        "image": "https://https://github.com/AWConant/custom-botc-assets/blob/main/oneoff/eulogist.png?raw=true",
+        "edition": "custom",
+        "firstNight": 27,
+        "firstNightReminder": "Each night, choose another player: if they are executed tomorrow, you may visit the Storyteller to learn one piece of true information the next day",
+        "otherNight": 27,
+        "otherNightReminder": "Each night, choose another player: if they are executed tomorrow, you may visit the Storyteller to learn one piece of true information the next day.",
+        "reminders": ["Chosen"],
+        "setup": true,
+        "name": "Eulogist",
+        "team": "town",
+        "ability": "Each night, choose another player: if they are executed tomorrow, you may visit the Storyteller to learn one piece of true information the next day"
+    },{"id":"lycanthrope"},{"id":"town_crier"},{"id":"oracle"},{"id":"cannibal"},{"id":"amnesiac"},{"id":"tea_lady"},{"id":"artist"},{"id":"philosopher"},{"id":"snitch"},{"id":"mutant"},{"id":"goon"},{"id":"klutz"},{"id":"pit-hag"},{"id":"godfather"},{"id":"devils_advocate"},{
+        "id": "Snake_Oil_Salesman",
+        "image": "https://github.com/AWConant/custom-botc-assets/blob/main/oneoff/snake_oil_salesman.png?raw=true",
+        "edition": "custom",
+        "firstNight": 0,
+        "firstNightReminder": "",
+        "otherNight": 26,
+        "otherNightReminder": "Each day you can pitch your Minion ability idea to the ST, who responds “Too strong,” “Too weak,” or “Perfect.” If you get “Perfect,” that is your ability for the rest of the game.",
+        "reminders": ["???"],
+        "setup": true,
+        "name": "Snake Oil Salesman",
+        "team": "minion",
+        "ability": "Each day you can pitch your Minion ability idea to the ST, who responds “Too strong,” “Too weak,” or “Perfect.” If you get “Perfect,” that is your ability for the rest of the game."
+    },{"id":"vigormortis"},{"id":"lil_monsta"},{"id":"pukka"}]
