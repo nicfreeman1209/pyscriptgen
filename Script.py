@@ -270,14 +270,14 @@ class Script:
 		return roleList
 	
 	def __repr__(self):
-		sep = '\*\*'
 		s = ''
-		for _,teamRoles in self.script.items():
+		for team,teamRoles in self.script.items():
 			teamRoles = self.SAOsort(teamRoles)
+			s += '**' + team.title() + ':**  '
 			s += '  '.join(teamRoles)
-			s += '\n' + sep + '\n'
+			s += '\n'
 		s += 'jinxes: %d' % self.CountJinxes()
-		s += '\naffinity: %.2f' % self.ScriptAffinity()
+		s += '\nid: %s_%.2f' % (self.ID(), self.ScriptAffinity())
 		return s
 	
 	def ID(self):
@@ -288,7 +288,7 @@ class Script:
 		roles = self.SAOsort(self.ListRoles())
 		for role in roles:
 			j.append({"id":role})
-		return json.dumps(j)
+		return j
 	
 	def Save(self):
 		# save in json format compatible with clocktower.online

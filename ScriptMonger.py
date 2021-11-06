@@ -6,13 +6,16 @@ import random
 import numpy as np
 import discord
 import io
+import json
 
 from dotenv import load_dotenv
 load_dotenv()
 
 from Script import Data, Script
-path = "public"
-inputData = Data(path)
+inputData = Data("public")
+
+from ScriptNamer import ScriptNamer
+scriptNamer = ScriptNamer("english")
 
 teamSizes = {
 	"townsfolk" : 13,
@@ -64,8 +67,8 @@ To generate a new script, we start with a "completely" random script.
 Then repeat the following:
   1) Choose a random slot on the current script.
   2) Remove the role in that slot.
-  3) Based on the remaining roles, estimate how likely each role would be to fill this empty slot:
-    - To each role, give a weight that is a sum of its heatmap values when paired with currently selected roles.
+  3) Based on the remaining on-script roles, estimate how likely each (off-script) role would be to fill this empty slot:
+    - To each role, give a weight that is a sum of its heatmap values when paired with the current on-script roles.
     - Ignore any roles that aren't on the right team (townsfolk/outsider/etc). 
     - Additionally, if we are looking for a townsfolk, use the SAO distribution to sample which SAO class we want; ignore any roles that don't fit into this SAO class.
 	- Don't allow more than 5 jinxes at once.
@@ -95,7 +98,22 @@ Suggested usage: type \gen (but only once) and find out how broken it is.
 	
 	await message.channel.send(script.__repr__())
 	
-	f = io.StringIO(script.ToolScript())
-	await message.channel.send(content="", file=discord.File(fp=f, filename="script_"+script.ID()+".json"))		
+	scriptNames = scriptNamer.SampleNames()
+	scriptMessage = await message.channel.send("**Suggested names** (please choose one): \n(1)  %s\n(2)  %s\n(3)  %s" % (scriptNames[0], scriptNames[1], scriptNames[2]))
+	emojis = ["1\u20E3", "2\u20E3", "3\u20E3"]
+	for emoji in emojis:
+		await scriptMessage.add_reaction(emoji)
+		
+	reaction, user = await client.wait_for('reaction_add', check=lambda reaction, user: client.user!=user)	
+	
+	scriptName = scriptNames[emojis.index(reaction.emoji)]
+	toolScript = script.ToolScript()
+	toolScript.append({
+		"id": "_meta",
+		"name": scriptName,
+		"logo": "https://raw.githubusercontent.com/nicfreeman1209/pyscriptgen/main/logo.png"
+		})
+	f = io.StringIO(json.dumps(toolScript))
+	await message.channel.send(content="", file=discord.File(fp=f, filename=scriptName+".json"))		
 
 client.run(os.getenv('DISCORD_TOKEN'))
