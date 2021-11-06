@@ -91,20 +91,23 @@ Suggested usage: type \gen (but only once) and find out how broken it is.
 				teamSizes['outsider'] = int(t[1])
 				teamSizes['minion'] = int(t[2])
 				teamSizes['demon'] = int(t[3])
-		except Exception as e:
-			print(e)
+		except:
+			return
 		
 	script = Script(inputData, teamSizes, seed=np.random.randint(10**3,10**4), steps=500,  alpha=0, beta=1)
-	
-	await message.channel.send(script.__repr__())
-	
 	scriptNames = scriptNamer.SampleNames()
-	namesMessage = await message.channel.send("**Suggested names** (please choose one): \n(1)  %s\n(2)  %s\n(3)  %s" % (scriptNames[0], scriptNames[1], scriptNames[2]))
+	nameStr = "**Suggested names** (please choose one): \n(1)  %s\n(2)  %s\n(3)  %s" % (scriptNames[0], scriptNames[1], scriptNames[2])
+	
+	sentMessage = await message.channel.send(script.__repr__() + "\n" + nameStr)
+	
 	emojis = ["1\u20E3", "2\u20E3", "3\u20E3"]
 	for emoji in emojis:
-		await namesMessage.add_reaction(emoji)
-		
-	reaction, user = await client.wait_for('reaction_add', check=lambda reaction, user: client.user!=user and namesMessage==reaction.message, timeout=180)	
+		await sentMessage.add_reaction(emoji)
+	
+	try:	
+		reaction, user = await client.wait_for('reaction_add', check=lambda reaction, user: client.user!=user and sentMessage==reaction.message, timeout=180)	
+	except:
+		return
 	
 	scriptName = scriptNames[emojis.index(reaction.emoji)]
 	toolScript = script.ToolScript()
