@@ -68,8 +68,11 @@ Then repeat the following:
     - To each role, give a weight that is a sum of its heatmap values when paired with currently selected roles.
     - Ignore any roles that aren't on the right team (townsfolk/outsider/etc). 
     - Additionally, if we are looking for a townsfolk, use the SAO distribution to sample which SAO class we want; ignore any roles that don't fit into this SAO class.
+	- Don't allow more than 5 jinxes at once.
   4) Sample a role using the weights above, put it in the empty slot.
 Stop after a few hundred iterations.
+
+Suggested usage: type \gen (but only once) and find out how broken it is.
 """
 		await message.channel.send(s)	
 		return		

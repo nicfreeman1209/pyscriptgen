@@ -276,7 +276,7 @@ class Script:
 			teamRoles = self.SAOsort(teamRoles)
 			s += '  '.join(teamRoles)
 			s += '\n' + sep + '\n'
-		s += '\njinxes: %d' % self.CountJinxes()
+		s += 'jinxes: %d' % self.CountJinxes()
 		s += '\naffinity: %.2f' % self.ScriptAffinity()
 		return s
 	
