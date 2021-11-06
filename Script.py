@@ -143,6 +143,8 @@ class Data:
 			plt.axvline(x=v,color='green')
 			plt.axhline(y=v,color='green')
 		plt.gca().invert_yaxis()
+		plt.ylabel("role")
+		plt.xlabel("role")
 		plt.savefig(os.path.join(self.path,"stats","heatmap.png"), bbox_inches="tight")		   
 
 		# write heatmap as xlsx, with role names included
@@ -170,6 +172,7 @@ class Data:
 			else:
 				keys.append("other")
 		plt.bar(keys, self.amyDist.values())
+		plt.ylabel("frequency")
 		plt.savefig(os.path.join(self.path,"stats","sao.png"), bbox_inches="tight")		
 		plt.clf()
 		
@@ -285,7 +288,7 @@ class Script:
 		roles = self.SAOsort(self.ListRoles())
 		for role in roles:
 			j.append({"id":role})
-		return j
+		return json.dumps(j)
 	
 	def Save(self):
 		# save in json format compatible with clocktower.online

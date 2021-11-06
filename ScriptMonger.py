@@ -35,9 +35,9 @@ async def on_message(message):
 	m = message.content.lower()
 	if m.startswith('\data'):
 		statsPath = os.path.join(path, "stats")
-		await message.channel.send(content="heatmap.png", file=discord.File(fp=os.path.join(statsPath, "heatmap.png")))					
+		await message.channel.send(content="heatmap of (role1,role2) frequencies", file=discord.File(fp=os.path.join(statsPath, "heatmap.png")))					
 		await message.channel.send(content="heatmap.xlsx", file=discord.File(fp=os.path.join(statsPath, "heatmap.xlsx")))					
-		await message.channel.send(content="sao.png", file=discord.File(fp=os.path.join(statsPath, "sao.png")))	
+		await message.channel.send(content="distribution of Standard Amy Order", file=discord.File(fp=os.path.join(statsPath, "sao.png")))	
 		return
 	
 	if not m.startswith('\gen'):
@@ -60,7 +60,7 @@ async def on_message(message):
 	
 	await message.channel.send(script.__repr__())
 	
-	f = io.StringIO(script.ToolScript().__repr__())
+	f = io.StringIO(script.ToolScript())
 	await message.channel.send(content="", file=discord.File(fp=f, filename="script_"+script.ID()+".json"))		
 
 client.run(os.getenv('DISCORD_TOKEN'))
