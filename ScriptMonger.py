@@ -94,7 +94,9 @@ Suggested usage: type \gen (but only once) and find out how broken it is.
 		except:
 			return
 		
-	script = Script(inputData, teamSizes, seed=np.random.randint(10**3,10**4), steps=500,  alpha=0, beta=1)
+	seed = np.random.randint(10**4,10**5)
+	steps = np.random.randint(500,700)
+	script = Script(inputData, teamSizes, seed=seed, steps=steps,  alpha=0, beta=1)
 	scriptNames = scriptNamer.SampleNames()
 	nameStr = "**Suggested names** (please choose one): \n(1)  %s\n(2)  %s\n(3)  %s" % (scriptNames[0], scriptNames[1], scriptNames[2])
 	
