@@ -23,36 +23,29 @@ def WeightedSampleFromDict(d):
 	
 
 # a version of Standard "Amy" Order
+standardAmyOrder = [
+	"you start",
+	"each night,",
+	"each night*",
+	"each day",
+	"once per game, at night,",
+	"once per game, at night*",
+	"once per game, during the day",
+	"once per game",
+	"on your 1st night",
+	"on your 1st day",
+	"when",
+	"if you",
+	"if",
+	"you",
+]
+
 def SAO(_s):
 	s = _s.lower()
-	if s.startswith("you start"):
-		return 1
-	if s.startswith("each night*"):
-		return 3
-	if s.startswith("each night"):
-		return 2
-	if s.startswith("each day"):
-		return 4
-	if s.startswith("once per game, at night*"):
-		return 6
-	if s.startswith("once per game, at night"):
-		return 5
-	if s.startswith("once per game, during the day"):
-		return 7
-	if s.startswith("once per game"):
-		return 8
-	if s.startswith("on your 1st day"):
-		return 10
-	if s.startswith("on your 1st night"):
-		return 9
-	if s.startswith("if you"):
-		return 11
-	if s.startswith("if"):
-		return 12
-	if s.startswith("you"):
-		return 13
-	return 14
-	
+	for i,prefix in enumerate(standardAmyOrder):
+		if s.startswith(prefix):
+			return i
+	return len(standardAmyOrder)	
 
 class Data:
 	def __init__(self, path):
@@ -170,7 +163,13 @@ class Data:
 
 		# SAO distribution
 		plt.clf()
-		plt.bar(self.amyDist.keys(), self.amyDist.values())
+		keys = []
+		for k in self.amyDist.keys():
+			if k < len(standardAmyOrder):
+				keys.append("\n".join(standardAmyOrder[k].split()))
+			else:
+				keys.append("other")
+		plt.bar(keys, self.amyDist.values())
 		plt.savefig(os.path.join(self.path,"stats","sao.png"), bbox_inches="tight")		
 		plt.clf()
 		

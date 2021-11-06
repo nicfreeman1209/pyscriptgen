@@ -28,22 +28,24 @@ async def on_ready():
 async def on_message(message):
 	if message.author == client.user:
 		return
+	
+	if not 'scriptmonger' in str(message.channel).lower():
+		return
 
 	m = message.content.lower()
-	if not m.startswith('\scriptmonger'):
+	if m.startswith('\data'):
+		statsPath = os.path.join(path, "stats")
+		await message.channel.send(content="heatmap.png", file=discord.File(fp=os.path.join(statsPath, "heatmap.png")))					
+		await message.channel.send(content="heatmap.xlsx", file=discord.File(fp=os.path.join(statsPath, "heatmap.xlsx")))					
+		await message.channel.send(content="sao.png", file=discord.File(fp=os.path.join(statsPath, "sao.png")))	
+		return
+	
+	if not m.startswith('\gen'):
 		return
 		
 	tokens = m.split()
 	for token in tokens:
-		token = token.strip()
-		print(token, token=="data")
 		try:
-			if token == "data":
-				statsPath = os.path.join(path, "stats")
-				await message.channel.send(content="heatmap.png", file=discord.File(fp=os.path.join(statsPath, "heatmap.png")))					
-				await message.channel.send(content="heatmap.xlsx", file=discord.File(fp=os.path.join(statsPath, "heatmap.xlsx")))					
-				await message.channel.send(content="sao.png", file=discord.File(fp=os.path.join(statsPath, "sao.png")))	
-				return
 		
 			if token.count('-') == 3:
 				t = token.split('-')
