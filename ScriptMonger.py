@@ -104,7 +104,7 @@ Suggested usage: type \gen (but only once) and find out how broken it is.
 	for emoji in emojis:
 		await namesMessage.add_reaction(emoji)
 		
-	reaction, user = await client.wait_for('reaction_add', check=lambda reaction, user: client.user!=user and namesMessage==reaction.message)	
+	reaction, user = await client.wait_for('reaction_add', check=lambda reaction, user: client.user!=user and namesMessage==reaction.message, timeout=180)	
 	
 	scriptName = scriptNames[emojis.index(reaction.emoji)]
 	toolScript = script.ToolScript()
