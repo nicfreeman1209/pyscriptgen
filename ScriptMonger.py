@@ -99,12 +99,12 @@ Suggested usage: type \gen (but only once) and find out how broken it is.
 	await message.channel.send(script.__repr__())
 	
 	scriptNames = scriptNamer.SampleNames()
-	scriptMessage = await message.channel.send("**Suggested names** (please choose one): \n(1)  %s\n(2)  %s\n(3)  %s" % (scriptNames[0], scriptNames[1], scriptNames[2]))
+	namesMessage = await message.channel.send("**Suggested names** (please choose one): \n(1)  %s\n(2)  %s\n(3)  %s" % (scriptNames[0], scriptNames[1], scriptNames[2]))
 	emojis = ["1\u20E3", "2\u20E3", "3\u20E3"]
 	for emoji in emojis:
-		await scriptMessage.add_reaction(emoji)
+		await namesMessage.add_reaction(emoji)
 		
-	reaction, user = await client.wait_for('reaction_add', check=lambda reaction, user: client.user!=user)	
+	reaction, user = await client.wait_for('reaction_add', check=lambda reaction, user: client.user!=user and namesMessage==reaction.message)	
 	
 	scriptName = scriptNames[emojis.index(reaction.emoji)]
 	toolScript = script.ToolScript()
