@@ -35,7 +35,7 @@ inputData = Data(dataPath)
 from ScriptNamer import ScriptNamer
 scriptNamer = ScriptNamer("english")
 
-teamSizes = {
+defaultTeamSizes = {
 	"townsfolk" : 13,
 	"outsider" : 4,
 	"minion" : 4,
@@ -56,11 +56,11 @@ async def on_ready():
 		logging.info('Present in guild %s' % guild.name)
 
 @bot.event
-async def on_guild_join(self, guild):
+async def on_guild_join(guild):
 	logging.info('Joined guild %s' % guild.name)	
 
 @bot.event
-async def on_guild_remove(self, guild):
+async def on_guild_remove(guild):
 	logging.info('Removed guild %s' % guild.name)	
 
 @bot.event
@@ -119,7 +119,8 @@ Suggested usage: type \gen (but only once) and find out how broken it is.
 		return		
 	elif not m.startswith('\gen'):
 		return
-		
+	
+	teamSizes = defaultTeamSizes.copy()
 	tokens = m.split()
 	for token in tokens:
 		try:		
@@ -150,7 +151,7 @@ Suggested usage: type \gen (but only once) and find out how broken it is.
 			return sentMessage==reaction.message and message.author==user	
 		reaction, user = await bot.wait_for('reaction_add', check=reaction_check, timeout=180)	
 	except:
-		logging.info("Timeout of %s for %s in %s" % (script.ID(), message.author.display_name, message.guild.name if message.guild else "DM"))
+		logging.info("Timeout %s for %s in %s" % (script.ID(), message.author.display_name, message.guild.name if message.guild else "DM"))
 		return
 	
 	scriptName = scriptNames[emojis.index(reaction.emoji)]
@@ -162,7 +163,7 @@ Suggested usage: type \gen (but only once) and find out how broken it is.
 		})
 	f = io.StringIO(json.dumps(toolScript))
 	await message.channel.send(content="", file=discord.File(fp=f, filename=scriptName+".json"))
-	logging.info("Created %s (%s) for %s in %s" % (scriptName, script.ID(), message.author.display_name, message.guild.name if message.guild else "DM"))
+	logging.info("Created %s for %s in %s, %s" % (script.ID(), message.author.display_name, message.guild.name if message.guild else "DM", scriptName))
 
 @bot.event
 async def close():
