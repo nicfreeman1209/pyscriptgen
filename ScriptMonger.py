@@ -45,7 +45,9 @@ teamSizes = {
 import discord
 from discord.ext.commands import Bot
 from discord.ext import commands
-bot = Bot("!")
+intents = discord.Intents.default()
+intents.members = True
+bot = Bot("\\", intents=intents) 
 
 @bot.event
 async def on_ready():
@@ -142,8 +144,11 @@ Suggested usage: type \gen (but only once) and find out how broken it is.
 	for emoji in emojis:
 		await sentMessage.add_reaction(emoji)
 	
+
 	try:	
-		reaction, user = await bot.wait_for('reaction_add', check=lambda reaction, user: message.author==user and sentMessage==reaction.message, timeout=180)	
+		def reaction_check(reaction, user):
+			return sentMessage==reaction.message and message.author==user	
+		reaction, user = await bot.wait_for('reaction_add', check=reaction_check, timeout=180)	
 	except:
 		logging.info("Timeout of %s for %s in %s" % (script.ID(), message.author.display_name, message.guild.name if message.guild else "DM"))
 		return
