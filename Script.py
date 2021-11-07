@@ -277,11 +277,11 @@ class Script:
 			s += '  '.join(teamRoles)
 			s += '\n'
 		s += 'jinxes: %d' % self.CountJinxes()
-		s += '\nid: %s_%.2f' % (self.ID(), self.ScriptAffinity())
+		s += '\nid: %s' % self.ID()
 		return s
 	
 	def ID(self):
-		return "%d_%d_%d_%d" % (self.seed, self.nSteps, self.alpha, self.beta)
+		return "%d_%d_%d_%d_%.2f" % (self.seed, self.nSteps, self.alpha, self.beta, self.ScriptAffinity())
 	
 	def ToolScript(self):
 		j = []

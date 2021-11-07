@@ -1,18 +1,36 @@
 # invite link:
-# https://discord.com/api/oauth2/authorize?client_id=906466718325559307&permissions=34816&scope=bot
+# https://discord.com/api/oauth2/authorize?bot_id=906466718325559307&permissions=34816&scope=bot
 
 import os
+import sys
 import random
 import numpy as np
-import discord
 import io
 import json
+
+import logging
+loggingMode = logging.INFO
+logging.basicConfig(filename='logging.log', 
+					format='%(asctime)s %(name)-16s %(levelname)-8s %(message)s',
+					datefmt='%m-%d %H:%M:%S',
+					filemode='a',
+					level=loggingMode)
+console = logging.StreamHandler()
+console.setLevel(loggingMode)
+console.setFormatter(logging.Formatter('%(levelname)-8s %(message)s'))
+logging.getLogger('').addHandler(console)
+		
+def ExceptionHook(excType, excValue, traceback, logging=logging):
+    logging.error("Uncaught exception",
+                 exc_info=(excType, excValue, traceback))
+sys.excepthook = ExceptionHook
 
 from dotenv import load_dotenv
 load_dotenv()
 
 from Script import Data, Script
-inputData = Data("public")
+dataPath = "public"
+inputData = Data(dataPath)
 
 from ScriptNamer import ScriptNamer
 scriptNamer = ScriptNamer("english")
@@ -24,18 +42,29 @@ teamSizes = {
 	"demon" : 4,
 }
 
-client = discord.Client()
+import discord
+from discord.ext.commands import Bot
+from discord.ext import commands
+bot = Bot("!")
 
-@client.event
+@bot.event
 async def on_ready():
-	print('We have logged in as {0.user}'.format(client))
+	logging.info('Logged in as {0.user}'.format(bot))
+	for guild in bot.guilds:
+		logging.info('Present in guild %s' % guild.name)
 
-@client.event
+@bot.event
+async def on_guild_join(self, guild):
+	logging.info('Joined guild {0.user}'.format(guild.name))	
+
+@bot.event
 async def on_message(message):
-	if message.author == client.user:
+	if message.author == bot.user:
 		return
 	
-	if not 'scriptmonger' in str(message.channel).lower():
+	isDM = isinstance(message.channel, discord.channel.DMChannel)
+	isBotChannel = 'scriptmonger' in str(message.channel).lower()
+	if not isBotChannel and not isDM:
 		return
 
 	m = message.content.lower()
@@ -47,11 +76,12 @@ async def on_message(message):
 		s += '\data  :  Uploads the heatmap and SAO distribution of the input data.\n'
 		s += '\explain  :  Gives a short description of the script generation algorithm.\n'
 		s += '\n'
-		s += "This bot will only respond to commands in channels where the channel name is or includes 'scriptmonger'.\n"
+		s += "This bot will only respond to commands in channels where the channel name is or includes 'scriptmonger', and DMs.\n"
+		s += 'Development: <https://github.com/nicfreeman1209/pyscriptgen>'
 		await message.channel.send(s)
 		return
 	elif m.startswith('\data'):
-		statsPath = os.path.join(path, "stats")
+		statsPath = os.path.join(dataPath, "stats")
 		await message.channel.send(content="heatmap of pairwise role frequencies", file=discord.File(fp=os.path.join(statsPath, "heatmap.png")))					
 		await message.channel.send(content="heatmap.xlsx (with role names)", file=discord.File(fp=os.path.join(statsPath, "heatmap.xlsx")))					
 		await message.channel.send(content="distribution of Standard Amy Order", file=discord.File(fp=os.path.join(statsPath, "sao.png")))	
@@ -107,9 +137,9 @@ Suggested usage: type \gen (but only once) and find out how broken it is.
 		await sentMessage.add_reaction(emoji)
 	
 	try:	
-		reaction, user = await client.wait_for('reaction_add', check=lambda reaction, user: client.user!=user and sentMessage==reaction.message, timeout=180)	
+		reaction, user = await bot.wait_for('reaction_add', check=lambda reaction, user: bot.user!=user and sentMessage==reaction.message, timeout=180)	
 	except:
-		return
+		logging.info("Timeout of %s for %s in %s" % (scriptName, script.ID(), message.author.display_name, message.guild.name if message.guild else "DM"))
 	
 	scriptName = scriptNames[emojis.index(reaction.emoji)]
 	toolScript = script.ToolScript()
@@ -119,6 +149,11 @@ Suggested usage: type \gen (but only once) and find out how broken it is.
 		"logo": "https://raw.githubusercontent.com/nicfreeman1209/pyscriptgen/main/logo.png"
 		})
 	f = io.StringIO(json.dumps(toolScript))
-	await message.channel.send(content="", file=discord.File(fp=f, filename=scriptName+".json"))		
+	await message.channel.send(content="", file=discord.File(fp=f, filename=scriptName+".json"))
+	logging.info("Created %s (%s) for %s in %s" % (scriptName, script.ID(), message.author.display_name, message.guild.name if message.guild else "DM"))
 
-client.run(os.getenv('DISCORD_TOKEN'))
+@bot.event
+async def close():
+	pass
+
+bot.run(os.getenv('DISCORD_TOKEN'))

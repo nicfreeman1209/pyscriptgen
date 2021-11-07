@@ -116,6 +116,7 @@ dmypy.json
 # output
 script_*.json
 ~*.xlsx
+logging.log
 
 # Discord api
 .env
