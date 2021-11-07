@@ -1,5 +1,5 @@
 # invite link:
-# https://discord.com/api/oauth2/authorize?bot_id=906466718325559307&permissions=34816&scope=bot
+# https://discord.com/api/oauth2/authorize?client_id=906466718325559307&permissions=34816&scope=bot
 
 import os
 import sys
@@ -55,7 +55,11 @@ async def on_ready():
 
 @bot.event
 async def on_guild_join(self, guild):
-	logging.info('Joined guild {0.user}'.format(guild.name))	
+	logging.info('Joined guild %s' % guild.name)	
+
+@bot.event
+async def on_guild_remove(self, guild):
+	logging.info('Removed guild %s' % guild.name)	
 
 @bot.event
 async def on_message(message):
@@ -77,7 +81,8 @@ async def on_message(message):
 		s += '\explain  :  Gives a short description of the script generation algorithm.\n'
 		s += '\n'
 		s += "This bot will only respond to commands in channels where the channel name is or includes 'scriptmonger', and DMs.\n"
-		s += 'Development: <https://github.com/nicfreeman1209/pyscriptgen>'
+		s += 'Development: <https://github.com/nicfreeman1209/pyscriptgen>\n'
+		s += 'Add to a server: <https://discord.com/api/oauth2/authorize?client_id=906466718325559307&permissions=34816&scope=bot>\n'
 		await message.channel.send(s)
 		return
 	elif m.startswith('\data'):
@@ -85,6 +90,7 @@ async def on_message(message):
 		await message.channel.send(content="heatmap of pairwise role frequencies", file=discord.File(fp=os.path.join(statsPath, "heatmap.png")))					
 		await message.channel.send(content="heatmap.xlsx (with role names)", file=discord.File(fp=os.path.join(statsPath, "heatmap.xlsx")))					
 		await message.channel.send(content="distribution of Standard Amy Order", file=discord.File(fp=os.path.join(statsPath, "sao.png")))	
+		logging.info("Sent stats data to %s in %s" % (message.author.display_name, message.guild.name if message.guild else "DM"))
 		return
 	elif m.startswith('\explain'):
 		s = """
@@ -137,9 +143,10 @@ Suggested usage: type \gen (but only once) and find out how broken it is.
 		await sentMessage.add_reaction(emoji)
 	
 	try:	
-		reaction, user = await bot.wait_for('reaction_add', check=lambda reaction, user: bot.user!=user and sentMessage==reaction.message, timeout=180)	
+		reaction, user = await bot.wait_for('reaction_add', check=lambda reaction, user: message.author==user and sentMessage==reaction.message, timeout=180)	
 	except:
 		logging.info("Timeout of %s for %s in %s" % (script.ID(), message.author.display_name, message.guild.name if message.guild else "DM"))
+		return
 	
 	scriptName = scriptNames[emojis.index(reaction.emoji)]
 	toolScript = script.ToolScript()
