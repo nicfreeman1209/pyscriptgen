@@ -139,7 +139,7 @@ Suggested usage: type \gen (but only once) and find out how broken it is.
 	try:	
 		reaction, user = await bot.wait_for('reaction_add', check=lambda reaction, user: bot.user!=user and sentMessage==reaction.message, timeout=180)	
 	except:
-		logging.info("Timeout of %s for %s in %s" % (scriptName, script.ID(), message.author.display_name, message.guild.name if message.guild else "DM"))
+		logging.info("Timeout of %s for %s in %s" % (script.ID(), message.author.display_name, message.guild.name if message.guild else "DM"))
 	
 	scriptName = scriptNames[emojis.index(reaction.emoji)]
 	toolScript = script.ToolScript()
