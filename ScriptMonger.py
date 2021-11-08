@@ -1,6 +1,3 @@
-# invite link:
-# https://discord.com/api/oauth2/authorize?client_id=906466718325559307&permissions=34816&scope=bot
-
 import os
 import sys
 import random
@@ -139,11 +136,13 @@ Stop after a few hundred iterations.
 	steps = np.random.randint(500,700)
 	script = Script(inputData, teamSizes, seed=seed, steps=steps,  alpha=0, beta=1, requiredRoles=requiredRoles)
 	scriptNames = scriptNamer.SampleNames()
-	nameStr = "**Suggested names** (please choose one): \n(1)  %s\n(2)  %s\n(3)  %s" % (scriptNames[0], scriptNames[1], scriptNames[2])
-	
+	nameStr = "**Suggested names** (please choose one):"
+	for i in range(len(scriptNames)):
+		nameStr += "\n(%d) %s" % (i+1, scriptNames[i])
+			
 	sentMessage = await message.channel.send(script.__repr__() + "\n" + nameStr)
 	
-	emojis = ["1\u20E3", "2\u20E3", "3\u20E3", "\U00002754"]
+	emojis = ["%d\u20E3"%(i+1) for i in range(len(scriptNames))] + ["\U00002754"]
 	for emoji in emojis:
 		await sentMessage.add_reaction(emoji)	
 
@@ -151,14 +150,14 @@ Stop after a few hundred iterations.
 		def reaction_check(reaction, user):
 			return sentMessage==reaction.message and message.author==user	
 		reaction, user = await bot.wait_for('reaction_add', check=reaction_check, timeout=300)
-		if emojis.index(reaction.emoji) == 3:
-			scriptName = scriptNamer.SampleNames()[np.random.randint(0,3)]
+		if emojis.index(reaction.emoji) == len(emojis):
+			scriptName = scriptNamer.SampleNames()[np.random.randint(0,len(emojis))]
 			contentMsg = ""		
 		else:
 			scriptName = scriptNames[emojis.index(reaction.emoji)]
 			contentMsg = ""
 	except:
-		scriptName = scriptNamer.SampleNames()[np.random.randint(0,3)]
+		scriptName = scriptNamer.SampleNames()[np.random.randint(0,len(emojis))]
 		contentMsg = "Timeout for %s, a name will be chosen at random:" % script.ID()
 		
 	toolScript = script.ToolScript()

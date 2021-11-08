@@ -17,6 +17,10 @@ class ScriptNamer():
             "N V", # trouble brewing
             "A N V", # bad moon rising
             "P and P", # sects and violets
+			#"N of N", # garden of sin
+			#"The N", # the tomb
+			#"N in the N of the A", # midnight in the house of the damned
+			#"The A N on N", # the greatest show on earth
         ]
         
     def ReadLines(self,path, filename):
