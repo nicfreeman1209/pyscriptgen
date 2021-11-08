@@ -55,7 +55,7 @@ class Data:
 		self.teams = {} # teamName -> teamList
 		self.roles = [] # idx -> role
 		self.rolesInv = {} # role -> idx
-		self.roleSAOs = {} # role -> SAOclass
+		self.roleSAOs = {} # role -> saoClass
 		self.roleTeams = {} # role -> team
 		self.LoadRoles()
 		
@@ -63,7 +63,7 @@ class Data:
 		self.LoadJinxes()
 		
 		self.roleAdjacency = None # [roleIdx1][roleIdx2] -> weight
-		self.saoDist = {} # SAOclass -> weight	 
+		self.saoDist = {} # saoClass -> weight	 
 		self.LoadScripts()
 		
 		self.hardRestrictions = {} # role1 -> requires role2

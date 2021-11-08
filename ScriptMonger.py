@@ -112,8 +112,6 @@ Then repeat the following:
 	- Don't allow more than 5 jinxes at once.
   4) Sample a role using the weights above, put it in the empty slot.
 Stop after a few hundred iterations.
-
-Suggested usage: type \gen (but only once) and find out how broken it is.
 """
 		await message.channel.send(s)	
 		return		
