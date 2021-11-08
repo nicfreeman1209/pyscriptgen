@@ -151,13 +151,13 @@ Stop after a few hundred iterations.
 			return sentMessage==reaction.message and message.author==user	
 		reaction, user = await bot.wait_for('reaction_add', check=reaction_check, timeout=300)
 		if emojis.index(reaction.emoji) == len(emojis):
-			scriptName = scriptNamer.SampleNames()[np.random.randint(0,len(emojis))]
+			scriptName = np.random.choice(scriptNamer.SampleNames())
 			contentMsg = ""		
 		else:
 			scriptName = scriptNames[emojis.index(reaction.emoji)]
 			contentMsg = ""
 	except:
-		scriptName = scriptNamer.SampleNames()[np.random.randint(0,len(emojis))]
+		scriptName = np.random.choice(scriptNamer.SampleNames())
 		contentMsg = "Timeout for %s, a name will be chosen at random:" % script.ID()
 		
 	toolScript = script.ToolScript()
