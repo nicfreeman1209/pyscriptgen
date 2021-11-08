@@ -159,8 +159,7 @@ Suggested usage: type \gen (but only once) and find out how broken it is.
 		else:
 			scriptName = scriptNames[emojis.index(reaction.emoji)]
 			contentMsg = ""
-	except Exception as e:
-		print(e)
+	except:
 		scriptName = scriptNamer.SampleNames()[np.random.randint(0,3)]
 		contentMsg = "Timeout for %s, a name will be chosen at random:" % script.ID()
 		
