@@ -213,7 +213,7 @@ class Script:
 		return [role for team in self.script for role in self.script[team]]
 	
 	def Steps(self, n):
-		while (self.IsTheScriptActuallyBroken() or self.nSteps < n):
+		while ((self.IsTheScriptActuallyBroken() or self.nSteps < n) and self.nSteps<=2*n):
 			self.Step()
 			
 	def Step(self):
@@ -229,7 +229,7 @@ class Script:
 		if not valid:
 			return		
 		self.script[team][pos] = ""
-		
+
 		# set role weights according to (sum of) adjacency to current roles
 		sao = WeightedSampleFromDict(self.data.saoDist) # filter by SAO dist if townsfolk
 		scriptRoles = self.ListRoles()
@@ -323,6 +323,8 @@ class Script:
 			s += '\n'
 		s += 'jinxes: %d' % self.CountJinxes()
 		s += '\nid: %s' % self.ID()
+		if self.IsTheScriptActuallyBroken():
+			s += '\nFailed validity check!'
 		return s
 	
 	def ID(self):
