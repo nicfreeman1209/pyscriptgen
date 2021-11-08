@@ -145,17 +145,22 @@ Suggested usage: type \gen (but only once) and find out how broken it is.
 	
 	sentMessage = await message.channel.send(script.__repr__() + "\n" + nameStr)
 	
-	emojis = ["1\u20E3", "2\u20E3", "3\u20E3"]
+	emojis = ["1\u20E3", "2\u20E3", "3\u20E3", "\U00002754"]
 	for emoji in emojis:
 		await sentMessage.add_reaction(emoji)	
 
 	try:	
 		def reaction_check(reaction, user):
 			return sentMessage==reaction.message and message.author==user	
-		reaction, user = await bot.wait_for('reaction_add', check=reaction_check, timeout=300)	
-		scriptName = scriptNames[emojis.index(reaction.emoji)]
-		contentMsg = ""
-	except:
+		reaction, user = await bot.wait_for('reaction_add', check=reaction_check, timeout=300)
+		if emojis.index(reaction.emoji) == 3:
+			scriptName = scriptNamer.SampleNames()[np.random.randint(0,3)]
+			contentMsg = ""		
+		else:
+			scriptName = scriptNames[emojis.index(reaction.emoji)]
+			contentMsg = ""
+	except Exception as e:
+		print(e)
 		scriptName = scriptNamer.SampleNames()[np.random.randint(0,3)]
 		contentMsg = "Timeout for %s, a name will be chosen at random:" % script.ID()
 		
