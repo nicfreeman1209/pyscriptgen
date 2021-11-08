@@ -145,19 +145,15 @@ Suggested usage: type \gen (but only once) and find out how broken it is.
 	for emoji in emojis:
 		await sentMessage.add_reaction(emoji)	
 
-	timedOut = False
 	try:	
 		def reaction_check(reaction, user):
 			return sentMessage==reaction.message and message.author==user	
 		reaction, user = await bot.wait_for('reaction_add', check=reaction_check, timeout=300)	
-	except:
-		timedOut = True
-		
-	if timedOut:
-		await message.channel.send("Timeout, the script name will be chosen at random.")
-		scriptName = scriptNamer.SampleNames()[np.random.randint(0,3)]
-	else:
 		scriptName = scriptNames[emojis.index(reaction.emoji)]
+		contentMsg = ""
+	except:
+		scriptName = scriptNamer.SampleNames()[np.random.randint(0,3)]
+		contentMsg = "Timeout for %s, a name will be chosen at random:" % script.ID()
 		
 	toolScript = script.ToolScript()
 	toolScript.append({
@@ -166,7 +162,7 @@ Suggested usage: type \gen (but only once) and find out how broken it is.
 		"logo": "https://raw.githubusercontent.com/nicfreeman1209/pyscriptgen/main/logo.png"
 		})
 	f = io.StringIO(json.dumps(toolScript))
-	await message.channel.send(content="", file=discord.File(fp=f, filename=scriptName+".json"))
+	await message.channel.send(content=contentMsg, file=discord.File(fp=f, filename=scriptName+".json"))
 	
 	logging.info("Created %s for %s in %s, %s" % (script.ID(), message.author.display_name, message.guild.name if message.guild else "DM", scriptName))
 

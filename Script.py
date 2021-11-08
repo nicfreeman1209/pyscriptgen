@@ -62,7 +62,7 @@ class Data:
 		self.LoadJinxes()
 		
 		self.roleAdjacency = None # [roleIdx1][roleIdx2] -> weight
-		self.amyDist = {} # SAOclass -> weight	 
+		self.saoDist = {} # SAOclass -> weight	 
 		self.LoadScripts()
 		
 		self.hardRestrictions = {} # role1 -> requires role2
@@ -102,7 +102,7 @@ class Data:
 	
 	def LoadScripts(self):
 		for i in sorted(self.roleSAOs.values()):
-			self.amyDist[i] = 0
+			self.saoDist[i] = 0
 
 		self.roleAdjacency = np.zeros((len(self.roles), len(self.roles)))
 		scripts = glob.glob(os.path.join(self.path,"scripts/") + "*.json")
@@ -120,7 +120,7 @@ class Data:
 					scriptRoles.append(roleId)
 					assert(roleId in self.roles)
 					if roleId in self.teams["townsfolk"]:
-						self.amyDist[self.roleSAOs[roleId]] += 1
+						self.saoDist[self.roleSAOs[roleId]] += 1
 				for role1 in scriptRoles:
 					for role2 in scriptRoles:
 						if role1 == role2:
@@ -166,12 +166,12 @@ class Data:
 		# SAO distribution
 		plt.clf()
 		keys = []
-		for k in self.amyDist.keys():
+		for k in self.saoDist.keys():
 			if k < len(standardAmyOrder):
 				keys.append("\n".join(standardAmyOrder[k].split()))
 			else:
 				keys.append("other")
-		plt.bar(keys, self.amyDist.values())
+		plt.bar(keys, self.saoDist.values())
 		plt.ylabel("frequency")
 		plt.savefig(os.path.join(self.path,"stats","sao.png"), bbox_inches="tight")		
 		plt.clf()
@@ -206,11 +206,12 @@ class Script:
 		
 		# choose which slot to resample & empty it
 		team = WeightedSampleFromDict(self.teamSizes)
-		i = np.random.randint(0,len(self.script[team]))
-		self.script[team][i] = ""
+		pos = np.random.randint(0,len(self.script[team]))
+		self.script[team][pos] = ""
+		
 		
 		# set role weights according to (sum of) adjacency to current roles
-		sao = WeightedSampleFromDict(self.data.amyDist) # and filter by SAO dist if townsfolk
+		sao = WeightedSampleFromDict(self.data.saoDist) # filter by SAO dist if townsfolk
 		scriptRoles = self.ListRoles()
 		roleWeights = {}
 		for role1 in scriptRoles:
@@ -232,7 +233,7 @@ class Script:
 			newRole = WeightedSampleFromDict(roleWeights)
 		else:
 			newRole = np.random.choice(self.data.teams[team])
-		self.script[team][i] = newRole				  
+		self.script[team][pos] = newRole				  
 		
 	def IsTheScriptActuallyBroken(self):
 		scriptRoles = self.ListRoles()
@@ -251,7 +252,7 @@ class Script:
 				nJinxes += 1
 		return nJinxes
 	
-	def ScriptAffinity(self):
+	def ScriptRoleAffinity(self):
 		roleWeights = {}
 		scriptRoles = self.ListRoles()
 		for role1 in scriptRoles:
@@ -262,6 +263,28 @@ class Script:
 					roleWeights[role2] = self.alpha * np.median(self.data.roleAdjacency) 
 				roleWeights[role2] += self.data.roleAdjacency[self.data.rolesInv[role1],self.data.rolesInv[role2]]
 		return np.sum(list(roleWeights.values())) / len(scriptRoles) / np.median(self.data.roleAdjacency) / len(self.data.roleAdjacency)
+	
+	def ScriptSAODist(self):
+		saoDist = {}
+		scriptRoles = self.ListRoles()
+		for role in scriptRoles:
+			if not role:
+				continue
+			if not self.data.roleTeams[role] == "townsfolk":
+				continue
+			saoClass = self.data.roleSAOs[role]
+			if saoClass not in saoDist:
+				saoDist[saoClass] = 0
+			saoDist[saoClass] += 1
+		return saoDist 
+		
+	def ScriptSAOVariation(self):
+		# total variation of current SAOs from data distribution
+		saoDist = self.ScriptSAODist()
+		n = max(max(saoDist.keys()), max(self.data.saoDist.keys()))+1 
+		v1 = np.array([saoDist.get(i,0) for i in range(n)]) / np.sum(list(saoDist.values()))
+		v2 = np.array([self.data.saoDist.get(i,0) for i in range(n)]) / np.sum(list(self.data.saoDist.values()))
+		return np.sum(np.abs(v1-v2))
 	
 	def SAOsort(self, roleList):
 		roleList = sorted(roleList)
@@ -281,7 +304,7 @@ class Script:
 		return s
 	
 	def ID(self):
-		return "%d_%d_%d_%d_%.2f" % (self.seed, self.nSteps, self.alpha, self.beta, self.ScriptAffinity())
+		return "%d_%d_%d_%d_%.2f_%.2f" % (self.seed, self.nSteps, self.alpha, self.beta, self.ScriptRoleAffinity(), self.ScriptSAOVariation())
 	
 	def ToolScript(self):
 		j = []
