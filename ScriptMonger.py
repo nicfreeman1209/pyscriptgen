@@ -78,7 +78,7 @@ async def on_message(message):
 	if m.startswith('\help'):
 		s = ''
 		s += 'Available commands:\n'
-		s += '\gen  :  Generates a new script. Optional a-b-c-d argument to specify team sizes, default 13-4-4-4.\n'
+		s += '\gen  :  Generates a new script. Optional arguments specify team sizes (default 13-4-4-4) and required roles. Example: _\\gen 13-4-4-1 pithag vigor crier_\n'
 		s += '\data  :  Uploads the heatmap and SAO distribution of the input data.\n'
 		s += '\explain  :  Gives a short description of the script generation algorithm.\n'
 		s += '\n'
@@ -121,21 +121,25 @@ Suggested usage: type \gen (but only once) and find out how broken it is.
 		return
 	
 	teamSizes = defaultTeamSizes.copy()
+	requiredRoles = []
 	tokens = m.split()
-	for token in tokens:
-		try:		
+	for token in tokens[1:]:
+		try:
+			token = token.lower()
 			if token.count('-') == 3:
 				t = token.split('-')
 				teamSizes['townsfolk'] = int(t[0])
 				teamSizes['outsider'] = int(t[1])
 				teamSizes['minion'] = int(t[2])
 				teamSizes['demon'] = int(t[3])
+			else:
+				requiredRoles.append(token)				
 		except:
 			return
 		
 	seed = np.random.randint(10**4,10**5)
 	steps = np.random.randint(500,700)
-	script = Script(inputData, teamSizes, seed=seed, steps=steps,  alpha=0, beta=1)
+	script = Script(inputData, teamSizes, seed=seed, steps=steps,  alpha=0, beta=1, requiredRoles=requiredRoles)
 	scriptNames = scriptNamer.SampleNames()
 	nameStr = "**Suggested names** (please choose one): \n(1)  %s\n(2)  %s\n(3)  %s" % (scriptNames[0], scriptNames[1], scriptNames[2])
 	

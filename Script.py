@@ -5,6 +5,7 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 import openpyxl
+from fuzzywuzzy import process
 
 
 def SanitizeName(s):
@@ -178,7 +179,7 @@ class Data:
 		
 
 class Script:
-	def __init__(self, inputData, teamSizes, seed=0, steps=1000, alpha=0, beta=1):
+	def __init__(self, inputData, teamSizes, seed=0, steps=1000, alpha=0, beta=1, requiredRoles=[]):
 		self.data = inputData
 		self.teamSizes = teamSizes
 		self.seed = seed
@@ -186,9 +187,24 @@ class Script:
 		self.alpha = alpha # pref attach init weight
 		self.beta = beta # pref attach power
 		
-		self.script = {}
+		self.requiredRoles = []
+		for roleArg in requiredRoles:
+			self.requiredRoles.append(process.extractOne(roleArg, self.data.roles)[0])
+		
+		self.script = {} # team -> [roles]
 		for team,n in self.teamSizes.items():
 			self.script[team] = np.random.choice(self.data.teams[team], n, replace=False)
+
+		# insert required roles
+		for role in self.requiredRoles:
+			team = self.data.roleTeams[role]
+			if role in self.script[team]:
+				continue
+			for i in range(len(self.script[team])):
+				if self.script[team][i] in self.requiredRoles:
+					continue
+				self.script[team][i] = role
+				break
 		
 		np.random.seed(seed)
 		self.Steps(steps)
@@ -205,10 +221,14 @@ class Script:
 		self.nSteps += 1
 		
 		# choose which slot to resample & empty it
-		team = WeightedSampleFromDict(self.teamSizes)
-		pos = np.random.randint(0,len(self.script[team]))
+		valid = False
+		for tries in range(20):
+			team = WeightedSampleFromDict(self.teamSizes)
+			pos = np.random.randint(0,len(self.script[team]))
+			valid = self.script[team][pos] not in self.requiredRoles
+		if not valid:
+			return		
 		self.script[team][pos] = ""
-		
 		
 		# set role weights according to (sum of) adjacency to current roles
 		sao = WeightedSampleFromDict(self.data.saoDist) # filter by SAO dist if townsfolk
@@ -294,6 +314,8 @@ class Script:
 	
 	def __repr__(self):
 		s = ''
+		if len(self.requiredRoles) > 0:
+			s += '**Required Roles:**  ' + '  '.join(self.requiredRoles) + '\n'
 		for team,teamRoles in self.script.items():
 			teamRoles = self.SAOsort(teamRoles)
 			s += '**' + team.title() + ':**  '
