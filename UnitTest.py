@@ -16,6 +16,6 @@ teamSizes = {
 inputData = Data("public")
 rolesRequired = ["pithag"]
 
-script = Script(inputData, teamSizes, seed=seed, steps=steps, alpha=alpha, beta=beta, rolesRequired=rolesRequired#)
+script = Script(inputData, teamSizes, seed=seed, steps=steps, alpha=alpha, beta=beta, rolesRequired=rolesRequired)
 
 print(script)
