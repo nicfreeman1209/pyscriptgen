@@ -150,13 +150,14 @@ Stop after a few hundred iterations.
 		def reaction_check(reaction, user):
 			return sentMessage==reaction.message and message.author==user	
 		reaction, user = await bot.wait_for('reaction_add', check=reaction_check, timeout=300)
-		if emojis.index(reaction.emoji) == len(emojis):
+		if reaction.emoji == "\U00002754":
 			scriptName = np.random.choice(scriptNamer.SampleNames())
 			contentMsg = ""		
 		else:
 			scriptName = scriptNames[emojis.index(reaction.emoji)]
 			contentMsg = ""
-	except:
+	except Exception as e:
+		print(e)
 		scriptName = np.random.choice(scriptNamer.SampleNames())
 		contentMsg = "Timeout for %s, a name will be chosen at random:" % script.ID()
 		

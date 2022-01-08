@@ -273,6 +273,7 @@ class Script:
 		return nJinxes
 	
 	def ScriptRoleAffinity(self):
+		# normalized (to 1) average heatmap value between script roles
 		roleWeights = {}
 		scriptRoles = self.ListRoles()
 		for role1 in scriptRoles:
@@ -299,7 +300,7 @@ class Script:
 		return saoDist 
 		
 	def ScriptSAOVariation(self):
-		# total variation of current SAOs from data distribution
+		# total variation of current SAO dist from data distribution
 		saoDist = self.ScriptSAODist()
 		n = max(max(saoDist.keys()), max(self.data.saoDist.keys()))+1 
 		v1 = np.array([saoDist.get(i,0) for i in range(n)]) / np.sum(list(saoDist.values()))
