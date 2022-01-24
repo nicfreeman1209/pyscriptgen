@@ -156,8 +156,7 @@ Stop after a few hundred iterations.
 		else:
 			scriptName = scriptNames[emojis.index(reaction.emoji)]
 			contentMsg = ""
-	except Exception as e:
-		print(e)
+	except:
 		scriptName = np.random.choice(scriptNamer.SampleNames())
 		contentMsg = "Timeout for %s, a name will be chosen at random:" % script.ID()
 		
