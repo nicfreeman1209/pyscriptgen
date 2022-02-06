@@ -90,7 +90,7 @@ class Data:
 				self.roles.append(roleId)
 				self.rolesInv[roleId] = len(self.roles)-1
 				self.roleSAOs[roleId] = SAO(role["ability"])
-				self.roleTeams[roleId] = role["team"]
+				self.roleTeams[roleId] = role["team"]				
 	
 	def LoadJinxes(self):
 		with open(os.path.join(self.path, "hatred.json")) as j:
@@ -183,13 +183,14 @@ class Script:
 		self.data = inputData
 		self.teamSizes = teamSizes
 		self.seed = seed
-		self.nSteps = 0
+		self.nSteps = steps
 		self.alpha = alpha # pref attach init weight
 		self.beta = beta # pref attach power
+		np.random.seed(seed)
 		
-		self.requiredRoles = []
+		self.requiredRoles = set()
 		for roleArg in requiredRoles:
-			self.requiredRoles.append(process.extractOne(roleArg, self.data.roles)[0])
+			self.requiredRoles.add(process.extractOne(roleArg, self.data.roles)[0])
 		
 		self.script = {} # team -> [roles]
 		for team,n in self.teamSizes.items():
@@ -206,8 +207,7 @@ class Script:
 				self.script[team][i] = role
 				break
 		
-		np.random.seed(seed)
-		self.Steps(steps)
+		self.Steps(self.nSteps)
 			
 	def ListRoles(self):
 		return [role for team in self.script for role in self.script[team]]
