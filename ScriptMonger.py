@@ -75,7 +75,7 @@ async def on_message(message):
 	if m.startswith('\help'):
 		s = ''
 		s += 'Available commands:\n'
-		s += '\gen  :  Generates a new script. Optional arguments specify team sizes (default 13-4-4-4) and required roles. Example: _\\gen 13-4-4-1 pithag vigor crier_\n'
+		s += '\gen  :  Generates a new script. Optional arguments specify team sizes (default 13-4-4-4) and roles to be required/omitted. Example: _\\gen 13-4-4-1 pithag cannibal -butler_\n'
 		s += '\data  :  Uploads the heatmap and SAO distribution of the input data.\n'
 		s += '\explain  :  Gives a short description of the script generation algorithm.\n'
 		s += '\n'
@@ -117,6 +117,7 @@ Stop after a few hundred iterations.
 	
 	teamSizes = defaultTeamSizes.copy()
 	requiredRoles = []
+	omittedRoles = []
 	tokens = m.split()
 	for token in tokens[1:]:
 		try:
@@ -128,13 +129,16 @@ Stop after a few hundred iterations.
 				teamSizes['minion'] = int(t[2])
 				teamSizes['demon'] = int(t[3])
 			else:
-				requiredRoles.append(token)				
+				if token.startswith("-"):
+					omittedRoles.append(token[1:])
+				else:
+					requiredRoles.append(token)				
 		except:
 			return
 		
 	seed = np.random.randint(10**4,10**5)
 	steps = np.random.randint(500,700)
-	script = Script(inputData, teamSizes, seed=seed, steps=steps,  alpha=0, beta=1, requiredRoles=requiredRoles)
+	script = Script(inputData, teamSizes, seed=seed, steps=steps,  alpha=0, beta=1, requiredRoles=requiredRoles, omittedRoles=omittedRoles)
 	scriptNames = scriptNamer.SampleNames()
 	nameStr = "**Suggested names** (please choose one):"
 	for i in range(len(scriptNames)):

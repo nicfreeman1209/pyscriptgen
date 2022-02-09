@@ -179,7 +179,7 @@ class Data:
 		
 
 class Script:
-	def __init__(self, inputData, teamSizes, seed=0, steps=1000, alpha=0, beta=1, requiredRoles=[]):
+	def __init__(self, inputData, teamSizes, seed=0, steps=1000, alpha=0, beta=1, requiredRoles=[], omittedRoles=[]):
 		self.data = inputData
 		self.teamSizes = teamSizes
 		self.seed = seed
@@ -189,12 +189,17 @@ class Script:
 		np.random.seed(seed)
 		
 		self.requiredRoles = set()
+		self.omittedRoles = set()
 		for roleArg in requiredRoles:
 			self.requiredRoles.add(process.extractOne(roleArg, self.data.roles)[0])
+		for roleArg in omittedRoles:
+			self.omittedRoles.add(process.extractOne(roleArg, self.data.roles)[0])
+		self.omittedRoles = self.omittedRoles - self.requiredRoles
 		
 		self.script = {} # team -> [roles]
 		for team,n in self.teamSizes.items():
-			self.script[team] = np.random.choice(self.data.teams[team], n, replace=False)
+			rolesInit = list(set(self.data.teams[team]) - self.omittedRoles)
+			self.script[team] = np.random.choice(rolesInit, n, replace=False)
 
 		# insert required roles
 		for role in self.requiredRoles:
@@ -243,6 +248,8 @@ class Script:
 				if team == "townsfolk" and self.data.roleSAOs[role2] != sao:
 					continue
 				if role2 in scriptRoles:
+					continue
+				if role2 in self.omittedRoles:
 					continue
 				if role2 not in roleWeights:
 					roleWeights[role2] = self.alpha * np.median(self.data.roleAdjacency) ** self.beta
@@ -317,6 +324,8 @@ class Script:
 		s = ''
 		if len(self.requiredRoles) > 0:
 			s += '**Required Roles:**  ' + '  '.join(self.requiredRoles) + '\n'
+		if len(self.omittedRoles) > 0:
+			s += '**Omitted Roles:**  ' + '  '.join(self.omittedRoles) + '\n'
 		for team,teamRoles in self.script.items():
 			teamRoles = self.SAOsort(teamRoles)
 			s += '**' + team.title() + ':**  '
