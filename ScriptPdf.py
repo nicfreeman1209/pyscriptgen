@@ -175,7 +175,7 @@ class ScriptPdf:
 				y = AddRole(x, y, role)
 
 		if x == x1:
-			y = AddCharacter(x,y,None)
+			y = AddRole(x,y,None)
 		if role["team"] == "traveler":
 			AddTeamRect(y1,y, "traveler")
 			y += fontSize*pt*3
