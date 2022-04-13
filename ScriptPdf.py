@@ -186,41 +186,57 @@ class ScriptPdf:
 			pdf.set_xy(0,10)
 			y = 15
 
-		x = x1
+		x = x2
 		y += fontSize*pt*3
 		
 		# jinxes
 		if len(jinxes)>0:
 			pdf.set_xy(x1+imSize, y)
-			pdf.cell(w=colWidth, h=0, align='L', txt="**Jinxes**", border=0, markdown=True)
+			pdf.cell(w=colWidth, h=0, align='L', txt="JINXES", border=0, markdown=True)
 			y += fontSize*pt*2
 
-			for role1,role2,jinx in jinxes:
-				pdf.set_xy(x1+imSize,y)
-				text = role1+" & "+role2+":\n"+jinx
-				pdf.multi_cell(w=colWidth*2, h=3.5, align='L', txt=text, border=0, markdown=True)
-				y += fontSize*pt*3
-			y += fontSize*pt*2
+		def AddJinx(x,y, role1, role2, text):
+			if text:
+				pdf.set_xy(x+imSize,y)
+				text = "**"+role1+" & "+role2+":**\n"+text
+				pdf.multi_cell(w=colWidth-imSize, h=3.5, align='L', txt=text, border=0, markdown=True)		
+			y += fontSize*pt*5.5
+			return y
+
+		for role1,role2,text in jinxes:
+			if x == x2:
+				x = x1
+				AddJinx(x, y, role1, role2, text)
+			else:
+				x = x2
+				y = AddJinx(x, y, role1, role2, text)
+
+		if x==x1:
+			y = AddJinx(x,y, None,None,None)
+
+		y += fontSize*pt*3
+		x = x1
 		
 		# first night order
+		y_nightOrder = y
 		pdf.set_xy(x1+imSize, y)
-		pdf.cell(w=colWidth, h=0, align='L', txt="**First Night**", border=0, markdown=True)
+		pdf.cell(w=colWidth, h=0, align='L', txt="FIRST NIGHT", border=0, markdown=True)
 		y += fontSize*pt
 
 		for _,name,reminder in firstNightOrder:
 			y += fontSize*pt
-			pdf.set_xy(x+imSize,y)
+			pdf.set_xy(x1+imSize,y)
 			pdf.cell(w=colWidth, h=0, align="L", txt=name, markdown=True)
 			
 		# other night order
-		y += fontSize*pt*3
-		pdf.set_xy(x1+imSize, y)
-		pdf.cell(w=colWidth, h=0, align='L', txt="**Other Night**", border=0, markdown=True)
+		y = y_nightOrder
+		pdf.set_xy(x2+imSize, y)
+		pdf.cell(w=colWidth, h=0, align='L', txt="OTHER NIGHT", border=0, markdown=True)
 		y += fontSize*pt
 
 		for _,name,reminder in otherNightOrder:
 			y += fontSize*pt
-			pdf.set_xy(x1+imSize,y)
+			pdf.set_xy(x2+imSize,y)
 			pdf.cell(w=colWidth, h=0, align="L", txt=name, markdown=True)
 		
 		# date at bottom
