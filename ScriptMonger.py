@@ -26,11 +26,14 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from ScriptSampler import Data, Script
+from ScriptPdf import ScriptPdf
 dataPath = "public"
 inputData = Data(dataPath)
+scriptPdf = ScriptPdf(dataPath)
 
 from ScriptNamer import ScriptNamer
 scriptNamer = ScriptNamer("english")
+
 
 defaultTeamSizes = {
 	"townsfolk" : 13,
@@ -172,8 +175,10 @@ Stop after a few hundred iterations.
 		"name": scriptName,
 		"logo": "https://raw.githubusercontent.com/nicfreeman1209/pyscriptgen/main/logo.png"
 		})
-	f = io.StringIO(json.dumps(toolScript))
-	await message.channel.send(content=contentMsg, file=discord.File(fp=f, filename=scriptName+".json"))
+	pdfFile = io.BytesIO(scriptPdf.MakePdf(toolScript, scriptName))
+	await message.channel.send(content=contentMsg, file=discord.File(fp=pdfFile, filename=scriptName+".pdf"))	
+	jsonFile = io.StringIO(json.dumps(toolScript))
+	await message.channel.send(content=contentMsg, file=discord.File(fp=jsonFile, filename=scriptName+".json"))
 	
 	logging.info("Created %s for %s in %s, %s" % (script.ID(), message.author.display_name, message.guild.name if message.guild else "DM", scriptName))
 
