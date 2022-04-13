@@ -76,7 +76,7 @@ class Data:
 		for team in teamNames:
 			self.teams[team] = []
 
-		with open(os.path.join(self.path, "roles.json")) as j:
+		with open(os.path.join(self.path, "official", "roles.json")) as j:
 			jsonRoles = json.load(j)
 			jsonRoles = sorted(jsonRoles, key=lambda x: SAO(x["ability"]))
 			jsonRoles = sorted(jsonRoles, key=lambda x: x["team"], reverse=True)
@@ -93,7 +93,7 @@ class Data:
 				self.roleTeams[roleId] = role["team"]				
 	
 	def LoadJinxes(self):
-		with open(os.path.join(self.path, "hatred.json")) as j:
+		with open(os.path.join(self.path, "official", "hatred.json")) as j:
 			jsonHatred = json.load(j)
 			for jinx in jsonHatred:
 				char1 = SanitizeName(jinx["id"])

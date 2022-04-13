@@ -25,7 +25,7 @@ sys.excepthook = ExceptionHook
 from dotenv import load_dotenv
 load_dotenv()
 
-from Script import Data, Script
+from ScriptSampler import Data, Script
 dataPath = "public"
 inputData = Data(dataPath)
 
@@ -78,10 +78,12 @@ async def on_message(message):
 		s += '\gen  :  Generates a new script. Optional arguments specify team sizes (default 13-4-4-4) and roles to be required/omitted. Example: _\\gen 13-4-4-1 pithag cannibal -butler_\n'
 		s += '\data  :  Uploads the heatmap and SAO distribution of the input data.\n'
 		s += '\explain  :  Gives a short description of the script generation algorithm.\n'
+		s += '\help  : Sends this message.\n'
 		s += '\n'
-		s += "This bot will only respond to commands in channels where the channel name is or includes 'scriptmonger', and DMs.\n"
 		s += 'Development: <https://github.com/nicfreeman1209/pyscriptgen>\n'
-		s += 'Add to a server: <https://discord.com/api/oauth2/authorize?client_id=906466718325559307&permissions=34816&scope=bot>\n'
+		s += 'Invite someone to this server: <https://discord.gg/53UwcFKrd8>\n'
+		s += 'Add the bot to your server: <https://discord.com/api/oauth2/authorize?client_id=906466718325559307&permissions=34816&scope=bot>\n'
+		s += "The bot will only respond to commands in channels where the channel name includes 'scriptmonger', and DMs.\n"
 		await message.channel.send(s)
 		return
 	elif m.startswith('\data'):
