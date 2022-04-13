@@ -223,7 +223,7 @@ class ScriptPdf:
 			pdf.set_xy(x1+imSize,y)
 			pdf.cell(w=colWidth, h=0, align="L", txt=name, markdown=True)
 		
-			
+		# date at bottom
 		today = datetime.datetime.now().strftime("%Y-%m-%d")		
 		pdf.set_xy(x1+imSize, 297-15)
 		pdf.set_text_color(150,150,150)
