@@ -338,7 +338,7 @@ class Script:
 		return s
 	
 	def ID(self):
-		return "%d_%d_%d_%d_%.2f_%.2f" % (self.seed, self.nSteps, self.alpha, self.beta, self.ScriptRoleAffinity(), self.ScriptSAOVariation())
+		return "%d_%d_%.1f_%.1f_%.2f_%.2f" % (self.seed, self.nSteps, self.alpha, self.beta, self.ScriptRoleAffinity(), self.ScriptSAOVariation())
 	
 	def ToolScript(self):
 		j = []

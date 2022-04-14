@@ -124,6 +124,8 @@ Stop after a few hundred iterations.
 	requiredRoles = []
 	omittedRoles = []
 	tokens = m.split()
+	alpha = 0 
+	beta = 1
 	for token in tokens[1:]:
 		try:
 			token = token.lower()
@@ -134,16 +136,23 @@ Stop after a few hundred iterations.
 				teamSizes['minion'] = int(t[2])
 				teamSizes['demon'] = int(t[3])
 			else:
-				if token.startswith("-"):
+				if token[:6] == "alpha=":
+					alpha = float(token[6:])
+					alpha = float("%.1f" % alpha)
+				elif token[:5] == "beta=":
+					beta = float(token[5:])
+					beta = float("%.1f" % beta)
+				elif token.startswith("-"):
 					omittedRoles.append(token[1:])
 				else:
-					requiredRoles.append(token)				
+					requiredRoles.append(token)	
 		except:
+			await message.channel.send("Invalid parameter '%s'" % token)
 			return
-		
+
 	seed = np.random.randint(10**4,10**5)
 	steps = np.random.randint(500,700)
-	script = Script(inputData, teamSizes, seed=seed, steps=steps,  alpha=0, beta=1, requiredRoles=requiredRoles, omittedRoles=omittedRoles)
+	script = Script(inputData, teamSizes, seed=seed, steps=steps,  alpha=alpha, beta=beta, requiredRoles=requiredRoles, omittedRoles=omittedRoles)
 	scriptNames = scriptNamer.SampleNames()
 	nameStr = "**Suggested names** (please choose one):"
 	for i in range(len(scriptNames)):
