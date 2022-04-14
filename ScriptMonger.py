@@ -84,7 +84,7 @@ async def on_message(message):
 		s += '\help  : Sends this message.\n'
 		s += '\n'
 		s += 'Development: <https://github.com/nicfreeman1209/pyscriptgen>\n'
-		s += 'Invite someone to this server: <https://discord.gg/53UwcFKrd8>\n'
+		s += 'Invite someone to the bots own server: <https://discord.gg/53UwcFKrd8>\n'
 		s += 'Add the bot to your server: <https://discord.com/api/oauth2/authorize?client_id=906466718325559307&permissions=34816&scope=bot>\n'
 		s += "The bot will only respond to commands in channels where the channel name includes 'scriptmonger', and DMs.\n"
 		await message.channel.send(s)
@@ -178,7 +178,7 @@ Stop after a few hundred iterations.
 	pdfFile = io.BytesIO(scriptPdf.MakePdf(toolScript, scriptName))
 	await message.channel.send(content=contentMsg, file=discord.File(fp=pdfFile, filename=scriptName+".pdf"))	
 	jsonFile = io.StringIO(json.dumps(toolScript))
-	await message.channel.send(content=contentMsg, file=discord.File(fp=jsonFile, filename=scriptName+".json"))
+	await message.channel.send(content="", file=discord.File(fp=jsonFile, filename=scriptName+".json"))
 	
 	logging.info("Created %s for %s in %s, %s" % (script.ID(), message.author.display_name, message.guild.name if message.guild else "DM", scriptName))
 
