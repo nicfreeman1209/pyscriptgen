@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 import PIL
 import datetime
 from PIL import ImageOps
@@ -92,7 +93,7 @@ class ScriptPdf:
 		
 		return script, firstNightOrder, otherNightOrder, jinxes
 		
-	def MakePdf(self, toolScript, scriptName):		  
+	def Pdf(self, toolScript, scriptName):		  
 		script, firstNightOrder, otherNightOrder, jinxes = self.FullScript(toolScript)
 		
 		pdf = FPDF(format="A4", unit="mm", orientation="P") # 210 x 297
@@ -150,6 +151,7 @@ class ScriptPdf:
 				pdf.set_font(fontName, '', fontSize)
 
 		prevTeam = "townsfolk"
+		y += fontSize*pt*0.5
 		y1 = y
 		y2 = None
 
@@ -245,4 +247,24 @@ class ScriptPdf:
 		pdf.set_text_color(150,150,150)
 		pdf.cell(w=colWidth, h=0, align="L", txt=today)
 		
+		return pdf
+		
+	def PdfAsBytes(self, toolScript, scriptName):
+		pdf = self.Pdf(toolScript, scriptName)
 		return pdf.output(dest='S')
+		
+	def PdfToFile(self, toolScript, scriptName, scriptDir):
+		pdf = self.Pdf(toolScript, scriptName)
+		pdf.output(os.path.join(scriptDir, scriptName+".pdf"))
+		return
+			
+if __name__ == '__main__':
+	fileName = sys.argv[1] 
+	with open(fileName, "r") as f:
+		toolScript = json.load(f)
+		scriptDir, scriptName = os.path.split(fileName)
+		scriptName = scriptName.split(".")[0]
+		scriptName = scriptName.replace("_"," ")
+		scriptPdf = ScriptPdf("public")
+		scriptPdf.PdfToFile(toolScript, scriptName, scriptDir)
+	

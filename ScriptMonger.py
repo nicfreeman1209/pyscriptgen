@@ -184,7 +184,7 @@ Stop after a few hundred iterations.
 		"name": scriptName,
 		"logo": "https://raw.githubusercontent.com/nicfreeman1209/pyscriptgen/main/logo.png"
 		})
-	pdfFile = io.BytesIO(scriptPdf.MakePdf(toolScript, scriptName))
+	pdfFile = io.BytesIO(scriptPdf.PdfAsBytes(toolScript, scriptName))
 	await message.channel.send(content=contentMsg, file=discord.File(fp=pdfFile, filename=scriptName+".pdf"))	
 	jsonFile = io.StringIO(json.dumps(toolScript))
 	await message.channel.send(content="", file=discord.File(fp=jsonFile, filename=scriptName+".json"))

@@ -9,7 +9,7 @@ class ScriptNamer():
         self.verbs = self.ReadLines(path, "verbs.txt")   
         self.replacements = {
             "N" : self.nouns,
-            "P" : self.plurals,
+            "P" : self.plurals, # plural nouns
             "A" : self.adjectives,
             "V" : self.verbs,
         }
