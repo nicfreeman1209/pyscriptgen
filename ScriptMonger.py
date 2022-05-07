@@ -180,8 +180,8 @@ Stop after a few hundred iterations.
 			scriptName = scriptNames[emojis.index(reaction.emoji)]
 			contentMsg = ""
 	except:
-		scriptName = np.random.choice(scriptNamer.SampleNames())
-		contentMsg = "Timeout for %s, a name will be chosen at random:" % script.ID()
+		logging.info("Timeout %s for %s in %s" % (script.ID(), message.author.display_name, message.guild.name if message.guild else "DM"))
+		return
 		
 	toolScript = script.ToolScript()
 	toolScript.append({
