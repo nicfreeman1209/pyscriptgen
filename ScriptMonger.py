@@ -108,7 +108,8 @@ Then repeat the following:
   1) Choose a random slot on the current script.
   2) Remove the role in that slot.
   3) Based on the remaining on-script roles, estimate how likely each (off-script) role would be to fill this empty slot:
-    - To each role, give a weight that is a sum of its heatmap values when paired with the current on-script roles.
+    - To each off-script role, put together the (sorted) vector of heatmap values of this role with the current on-script roles.
+	- Assign that role a weight that is the 10th percentile of that vector.
     - Ignore any roles that aren't on the right team (townsfolk/outsider/etc). 
     - Additionally, if we are looking for a townsfolk, use the SAO distribution to sample which SAO class we want; ignore any roles that don't fit into this SAO class.
 	- Don't allow more than 5 jinxes at once.
@@ -124,8 +125,9 @@ Stop after a few hundred iterations.
 	requiredRoles = []
 	omittedRoles = []
 	tokens = m.split()
-	alpha = 0 
-	beta = 1
+	alpha = 0.0
+	beta = 1.0
+	gamma = 0.1
 	for token in tokens[1:]:
 		try:
 			token = token.lower()
@@ -142,6 +144,9 @@ Stop after a few hundred iterations.
 				elif token[:5] == "beta=":
 					beta = float(token[5:])
 					beta = float("%.1f" % beta)
+				elif token[:5] == "gamma=":
+					gamma = int(token[5:])
+					gamma = float("%.1f" % gamma)
 				elif token.startswith("-"):
 					omittedRoles.append(token[1:])
 				else:
@@ -152,8 +157,8 @@ Stop after a few hundred iterations.
 
 	seed = np.random.randint(10**4,10**5)
 	steps = np.random.randint(500,700)
-	script = Script(inputData, teamSizes, seed=seed, steps=steps,  alpha=alpha, beta=beta, requiredRoles=requiredRoles, omittedRoles=omittedRoles)
 	scriptNames = scriptNamer.SampleNames()
+	script = Script(inputData, teamSizes, seed=seed, steps=steps,  alpha=alpha, beta=beta, gamma=gamma, requiredRoles=requiredRoles, omittedRoles=omittedRoles)
 	nameStr = "**Suggested names** (please choose one):"
 	for i in range(len(scriptNames)):
 		nameStr += "\n(%d) %s" % (i+1, scriptNames[i])

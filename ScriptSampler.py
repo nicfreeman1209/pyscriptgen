@@ -179,13 +179,14 @@ class Data:
 		
 
 class Script:
-	def __init__(self, inputData, teamSizes, seed=0, steps=1000, alpha=0, beta=1, requiredRoles=[], omittedRoles=[]):
+	def __init__(self, inputData, teamSizes, seed=0, steps=1000, alpha=0, beta=1, gamma=0.1, requiredRoles=[], omittedRoles=[]):
 		self.data = inputData
 		self.teamSizes = teamSizes
 		self.seed = seed
 		self.nSteps = steps
 		self.alpha = alpha # pref attach init weight
 		self.beta = beta # pref attach power
+		self.gamma = gamma # distance along role weights vector to use in sampling (e.g. 0.5=median)
 		np.random.seed(seed)
 		
 		self.requiredRoles = set()
@@ -212,18 +213,19 @@ class Script:
 				self.script[team][i] = role
 				break
 		
-		self.Steps(self.nSteps)
+		self.BuildScript()
 			
 	def ListRoles(self):
 		return [role for team in self.script for role in self.script[team]]
 	
-	def Steps(self, n):
-		while ((self.IsTheScriptActuallyBroken() or self.nSteps < n) and self.nSteps<=2*n):
+	def BuildScript(self):
+		n = 0
+		while ((self.IsTheScriptActuallyBroken() or n < self.nSteps) and n < self.nSteps*2):
 			self.Step()
+			n += 1
 			
 	def Step(self):
 		# Gibbs sampler step
-		self.nSteps += 1
 		
 		# choose which slot to resample & empty it
 		valid = False
@@ -238,7 +240,7 @@ class Script:
 		# set role weights according to (sum of) adjacency to current roles
 		sao = WeightedSampleFromDict(self.data.saoDist) # filter by SAO dist if townsfolk
 		scriptRoles = self.ListRoles()
-		roleWeights = {}
+		roleWeightsFull = {}
 		for role1 in scriptRoles:
 			if not role1:
 				continue
@@ -251,16 +253,29 @@ class Script:
 					continue
 				if role2 in self.omittedRoles:
 					continue
-				if role2 not in roleWeights:
-					roleWeights[role2] = self.alpha * np.median(self.data.roleAdjacency) ** self.beta
-				roleWeights[role2] += (1-self.alpha)*self.data.roleAdjacency[self.data.rolesInv[role1],self.data.rolesInv[role2]] ** self.beta
+				if role1 == role2:
+					continue
+				if role2 not in roleWeightsFull:
+					roleWeightsFull[role2] = []
+				roleWeightsFull[role2].append(self.data.roleAdjacency[self.data.rolesInv[role1],self.data.rolesInv[role2]])
 		
-		# resample
+		# record the gamma'th percentile of roleWeightsFull for each role
+		# use that as sampling weight in pref-attach style sampler
+		roleWeights = {}
+		for role in roleWeightsFull:
+			roleWeightsFull[role] = sorted(roleWeightsFull[role])
+			w = np.percentile(roleWeightsFull[role], self.gamma*100)
+			roleWeights[role] = self.alpha + w ** self.beta
+
 		if np.sum(list(roleWeights.values())) > 0:
 			newRole = WeightedSampleFromDict(roleWeights)
 		else:
 			newRole = np.random.choice(self.data.teams[team])
 		self.script[team][pos] = newRole				  
+
+		# debugging
+		#print(scriptRoles)
+		#print(json.dumps(roleWeights, indent=2, sort_keys=True))
 		
 	def IsTheScriptActuallyBroken(self):
 		scriptRoles = self.ListRoles()
@@ -338,7 +353,7 @@ class Script:
 		return s
 	
 	def ID(self):
-		return "%d_%d_%.1f_%.1f_%.2f_%.2f" % (self.seed, self.nSteps, self.alpha, self.beta, self.ScriptRoleAffinity(), self.ScriptSAOVariation())
+		return "%d_%d_%.1f_%.1f_%.1f_%.2f_%.2f" % (self.seed, self.nSteps, self.alpha, self.beta, self.gamma, self.ScriptRoleAffinity(), self.ScriptSAOVariation())
 	
 	def ToolScript(self):
 		j = []
