@@ -270,7 +270,7 @@ class Script:
 		if np.sum(list(roleWeights.values())) > 0:
 			newRole = WeightedSampleFromDict(roleWeights)
 		else:
-			newRole = np.random.choice(self.data.teams[team])
+			newRole = np.random.choice(list(set(self.data.teams[team]) - set(scriptRoles)))
 		self.script[team][pos] = newRole				  
 
 		# debugging
