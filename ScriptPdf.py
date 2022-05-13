@@ -80,8 +80,8 @@ class ScriptPdf:
 			if role["otherNight"] > 0:
 				otherNightOrder.append((role["otherNight"], role["name"], role["otherNightReminder"]))
 		
-		firstNightOrder = sorted(firstNightOrder, key=lambda x: x[0], reverse=True)
-		otherNightOrder = sorted(otherNightOrder, key=lambda x: x[0], reverse=True)
+		firstNightOrder = sorted(firstNightOrder, key=lambda x: x[0])
+		otherNightOrder = sorted(otherNightOrder, key=lambda x: x[0])
 		
 		# record the jinxes
 		for _jinx in self.hatred:

@@ -247,8 +247,6 @@ class Script:
 			for role2 in self.data.roles:
 				if self.data.roleTeams[role2] != team:
 					continue
-				if team == "townsfolk" and self.data.roleSAOs[role2] != sao:
-					continue
 				if role2 in scriptRoles:
 					continue
 				if role2 in self.omittedRoles:
