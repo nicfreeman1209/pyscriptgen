@@ -93,10 +93,12 @@ class ScriptPdf:
 		
 		return script, firstNightOrder, otherNightOrder, jinxes
 		
-	def Pdf(self, toolScript, scriptName):		  
+	def _Pdf(self, toolScript, scriptName, dummyRun=False, pageY=297):		  
 		script, firstNightOrder, otherNightOrder, jinxes = self.FullScript(toolScript)
 		
-		pdf = FPDF(format="A4", unit="mm", orientation="P") # 210 x 297
+		pageX = 210
+		pageY = max(297, pageY) # pageY should be obtained from dummyRun=True
+		pdf = FPDF(format=(pageX, pageY), unit="mm", orientation="P") # 210 x 297
 		pdf.add_page()
 		pdf.set_margin(0)
 		
@@ -166,6 +168,8 @@ class ScriptPdf:
 				prevTeam = role["team"]
 				if role["team"] == "traveler":
 					pdf.add_page()
+					if dummyRun:
+						return None, y
 					pdf.set_xy(0,10)
 					y = 15
 				y1 = y
@@ -185,6 +189,8 @@ class ScriptPdf:
 			y += fontSize*pt*0.75
 			AddTeamRect(y1,y, prevTeam)
 			pdf.add_page()
+			if dummyRun:
+				return None, y
 			pdf.set_xy(0,10)
 			y = 15
 
@@ -243,11 +249,15 @@ class ScriptPdf:
 		
 		# date at bottom
 		today = datetime.datetime.now().strftime("%Y-%m-%d")		
-		pdf.set_xy(x1+imSize, 297-15)
+		pdf.set_xy(x1+imSize, pageY-15)
 		pdf.set_text_color(150,150,150)
 		pdf.cell(w=colWidth, h=0, align="L", txt=today)
 		
 		return pdf
+		
+	def Pdf(self, toolScript, scriptName):
+		_,pageY = self._Pdf(toolScript, scriptName, dummyRun=True)
+		return self._Pdf(toolScript, scriptName, pageY=pageY)
 		
 	def PdfAsBytes(self, toolScript, scriptName):
 		pdf = self.Pdf(toolScript, scriptName)
