@@ -256,6 +256,7 @@ class ScriptPdf:
 		return pdf
 		
 	def Pdf(self, toolScript, scriptName):
+		# dummy run to calc page height, then write the pdf
 		_,pageY = self._Pdf(toolScript, scriptName, dummyRun=True)
 		return self._Pdf(toolScript, scriptName, pageY=pageY)
 		

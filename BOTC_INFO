@@ -1,5 +1,8 @@
+The Python code within this repository is licensed as GPL v3.
+
 Blood on the Clocktower is a trademark of Steven Medway and The Pandemonium Institute: https://www.thepandemoniuminstitute.com/
-Scripts in the data_scripts folder were scraped from script competitions on the "unofficial" Blood on the Clocktower discord server: https://discord.gg/Ftgy7fN
-roles.json came from https://github.com/bra1n/townsquare/blob/develop/src/roles.json
+Contents of /public:
+- roles.json, hated.json and icons may be found on https://github.com/bra1n/townsquare/
+- scripts folder came from script competitions on the "unofficial" Blood on the Clocktower discord server: https://discord.gg/Ftgy7fN
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
